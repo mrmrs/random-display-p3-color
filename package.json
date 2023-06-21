@@ -1,0 +1,25 @@
+{
+  "name": "random-display-p3-color",
+  "description": "Generate a random display-p3 color.",
+  "author": "@mrmrs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "ava -v"
+  },
+  "repository": "mrmrs/random-display-p3-color",
+  "keywords": [
+    "p3",
+    "display-p3",
+    "color",
+    "random",
+    "generate"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^5.3.1"
+  }
+}
