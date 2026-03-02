@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>random-display-p3-color</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+    padding: 2rem;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    max-width: 40rem;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .color-display {
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    word-break: break-all;
+    letter-spacing: -0.01em;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(0,0,0,0.03);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .btn:hover { background: rgba(0,0,0,0.05); }
+  .btn.active { background: #111; color: white; border-color: #111; }
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  pre {
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  .hint {
+    color: #999;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  .version {
+    color: #999;
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+
+  a { color: inherit; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>random-display-p3-color <span class="version">v2.0.0</span></h1>
+  <p class="subtitle">Click anywhere to generate a new color. Zero dependencies.</p>
+
+  <div class="color-display" id="colorValue"></div>
+
+  <div class="controls">
+    <button class="btn active" data-hue="">any</button>
+    <button class="btn" data-hue="red">red</button>
+    <button class="btn" data-hue="orange">orange</button>
+    <button class="btn" data-hue="yellow">yellow</button>
+    <button class="btn" data-hue="green">green</button>
+    <button class="btn" data-hue="cyan">cyan</button>
+    <button class="btn" data-hue="blue">blue</button>
+    <button class="btn" data-hue="purple">purple</button>
+    <button class="btn" data-hue="pink">pink</button>
+    <button class="btn" data-hue="warm">warm</button>
+    <button class="btn" data-hue="cool">cool</button>
+  </div>
+
+  <h2>Install</h2>
+  <pre>npm install random-display-p3-color</pre>
+
+  <h2>Usage</h2>
+  <pre>import randomP3 from 'random-display-p3-color'
+
+randomP3()
+// =&gt; "color(display-p3 0.93 0.18 0.45)"
+
+randomP3({ hue: 'blue' })
+// =&gt; "color(display-p3 0.12 0.38 0.95)"
+
+randomP3({ hue: 'warm', lightness: [0.7, 0.9] })
+// =&gt; "color(display-p3 0.94 0.82 0.75)"
+
+randomP3({ format: 'object' })
+// =&gt; { r, g, b, alpha, css }</pre>
+
+  <p class="hint">Click the page background or press any key</p>
+</div>
+
+<script type="module">
+// Inline the randomP3 function for the demo
+const HUE_RANGES = {
+  red: [[345, 360], [0, 15]],
+  orange: [[15, 45]],
+  yellow: [[45, 70]],
+  green: [[70, 165]],
+  cyan: [[165, 195]],
+  blue: [[195, 260]],
+  purple: [[260, 310]],
+  pink: [[310, 345]],
+  warm: [[0, 70]],
+  cool: [[165, 310]],
+}
+
+function hslToRgb(h, s, l) {
+  h = h / 360
+  const a = s * Math.min(l, 1 - l)
+  const f = (n) => {
+    const k = (n + h * 12) % 12
+    return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+  }
+  return [f(0), f(8), f(4)]
+}
+
+function randomInRange(min, max) {
+  return min + Math.random() * (max - min)
+}
+
+function randomHue(hueOption) {
+  if (hueOption == null) return Math.random() * 360
+  if (Array.isArray(hueOption)) {
+    const [min, max] = hueOption
+    if (min <= max) return randomInRange(min, max)
+    const arc = (360 - min) + max
+    const v = min + Math.random() * arc
+    return v >= 360 ? v - 360 : v
+  }
+  const ranges = HUE_RANGES[hueOption]
+  if (!ranges) throw new Error(`Unknown hue: "${hueOption}"`)
+  const arcs = ranges.map(([a, b]) => b - a)
+  const totalArc = arcs.reduce((sum, a) => sum + a, 0)
+  let pick = Math.random() * totalArc
+  for (let i = 0; i < ranges.length; i++) {
+    pick -= arcs[i]
+    if (pick <= 0) return randomInRange(ranges[i][0], ranges[i][1])
+  }
+  return randomInRange(ranges[0][0], ranges[0][1])
+}
+
+function round(v, d = 4) {
+  const f = Math.pow(10, d)
+  return Math.round(v * f) / f
+}
+
+function randomP3(options = {}) {
+  const { hue, saturation, lightness, alpha: alphaOpt, format } = options
+  const useHsl = hue != null || saturation != null || lightness != null
+  const [aMin, aMax] = alphaOpt ?? [1, 1]
+  const a = aMin === aMax ? aMin : randomInRange(aMin, aMax)
+  let r, g, b
+  if (useHsl) {
+    const h = randomHue(hue)
+    const [sMin, sMax] = saturation ?? [0, 1]
+    const [lMin, lMax] = lightness ?? [0, 1]
+    const s = sMin === sMax ? sMin : randomInRange(sMin, sMax)
+    const l = lMin === lMax ? lMin : randomInRange(lMin, lMax)
+    ;[r, g, b] = hslToRgb(h, s, l)
+  } else {
+    r = Math.random()
+    g = Math.random()
+    b = Math.random()
+  }
+  const alpha = a < 1 ? ` / ${round(a, 3)}` : ''
+  return `color(display-p3 ${round(r)} ${round(g)} ${round(b)}${alpha})`
+}
+
+// Demo logic
+const colorValue = document.getElementById('colorValue')
+const buttons = document.querySelectorAll('.btn[data-hue]')
+let currentHue = null
+
+function generate() {
+  const opts = currentHue ? { hue: currentHue, saturation: [0.4, 1], lightness: [0.25, 0.75] } : {}
+  const color = randomP3(opts)
+  document.body.style.backgroundColor = color
+  colorValue.textContent = color
+}
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    buttons.forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    currentHue = btn.dataset.hue || null
+    generate()
+  })
+})
+
+document.body.addEventListener('click', generate)
+document.addEventListener('keydown', generate)
+
+generate()
+</script>
+
+</body>
+</html>
