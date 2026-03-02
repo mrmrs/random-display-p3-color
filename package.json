@@ -1,14 +1,24 @@
 {
   "name": "random-display-p3-color",
-  "description": "Generate a random display-p3 color.",
+  "version": "2.0.0",
+  "description": "Generate random Display-P3 colors with optional hue, saturation, and lightness constraints. Perfect for generative art, creative coding, and design tools. Zero dependencies.",
   "author": "@mrmrs",
-  "version": "1.0.0",
-  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
-    "test": "ava -v"
+    "test": "node --test test.js"
   },
   "repository": "mrmrs/random-display-p3-color",
   "keywords": [
@@ -16,10 +26,19 @@
     "display-p3",
     "color",
     "random",
-    "generate"
+    "generate",
+    "hsl",
+    "hue",
+    "generative",
+    "art",
+    "creative-coding",
+    "design",
+    "wide-gamut",
+    "css",
+    "canvas",
+    "p5js"
   ],
-  "license": "MIT",
-  "devDependencies": {
-    "ava": "^5.3.1"
+  "engines": {
+    "node": ">=18"
   }
 }
