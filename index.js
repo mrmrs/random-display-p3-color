@@ -11,6 +11,8 @@ const HUE_RANGES = {
   cool: [[165, 310]],
 }
 
+const HUE_NAMES = Object.keys(HUE_RANGES)
+
 function hslToRgb(h, s, l) {
   h = h / 360
   const a = s * Math.min(l, 1 - l)
@@ -25,10 +27,30 @@ function randomInRange(min, max) {
   return min + Math.random() * (max - min)
 }
 
+function validateRange(name, range, min, max, allowWrap = false) {
+  if (!Array.isArray(range) || range.length !== 2) {
+    throw new TypeError(`${name} must be a [min, max] range`)
+  }
+
+  const [rangeMin, rangeMax] = range
+  if (!Number.isFinite(rangeMin) || !Number.isFinite(rangeMax)) {
+    throw new RangeError(`${name} range values must be finite numbers`)
+  }
+
+  if (rangeMin < min || rangeMin > max || rangeMax < min || rangeMax > max) {
+    throw new RangeError(`${name} range values must be between ${min} and ${max}`)
+  }
+
+  if (!allowWrap && rangeMin > rangeMax) {
+    throw new RangeError(`${name} range min must be less than or equal to max`)
+  }
+}
+
 function randomHue(hueOption) {
   if (hueOption == null) return Math.random() * 360
 
   if (Array.isArray(hueOption)) {
+    validateRange('hue', hueOption, 0, 360, true)
     const [min, max] = hueOption
     if (min <= max) return randomInRange(min, max)
     // Wrapping range like [350, 10]
@@ -38,7 +60,7 @@ function randomHue(hueOption) {
   }
 
   const ranges = HUE_RANGES[hueOption]
-  if (!ranges) throw new Error(`Unknown hue name: "${hueOption}". Valid names: ${Object.keys(HUE_RANGES).join(', ')}`)
+  if (!ranges) throw new Error(`Unknown hue name: "${hueOption}". Valid names: ${HUE_NAMES.join(', ')}`)
 
   // Pick a random sub-range weighted by arc length
   const arcs = ranges.map(([a, b]) => b - a)
@@ -64,6 +86,14 @@ function formatP3(r, g, b, a) {
 export default function randomP3(options = {}) {
   const { hue, saturation, lightness, alpha: alphaOpt, format } = options
   const useHsl = hue != null || saturation != null || lightness != null
+
+  if (format != null && format !== 'css' && format !== 'object') {
+    throw new TypeError('format must be "css" or "object"')
+  }
+
+  if (saturation != null) validateRange('saturation', saturation, 0, 1)
+  if (lightness != null) validateRange('lightness', lightness, 0, 1)
+  if (alphaOpt != null) validateRange('alpha', alphaOpt, 0, 1)
 
   const [aMin, aMax] = alphaOpt ?? [1, 1]
   const a = aMin === aMax ? aMin : randomInRange(aMin, aMax)

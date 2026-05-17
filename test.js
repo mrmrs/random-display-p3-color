@@ -154,6 +154,38 @@ describe('randomP3()', () => {
     })
   })
 
+  describe('input validation', () => {
+    it('rejects invalid range shapes', () => {
+      assert.throws(() => randomP3({ hue: [30] }), TypeError)
+      assert.throws(() => randomP3({ saturation: [0.5, 0.75, 1] }), TypeError)
+      assert.throws(() => randomP3({ lightness: 'bright' }), TypeError)
+    })
+
+    it('rejects non-finite range values', () => {
+      assert.throws(() => randomP3({ hue: [0, Number.NaN] }), RangeError)
+      assert.throws(() => randomP3({ saturation: [0, Infinity] }), RangeError)
+      assert.throws(() => randomP3({ alpha: [-Infinity, 1] }), RangeError)
+    })
+
+    it('rejects ranges outside their supported domains', () => {
+      assert.throws(() => randomP3({ hue: [-1, 20] }), RangeError)
+      assert.throws(() => randomP3({ hue: [20, 361] }), RangeError)
+      assert.throws(() => randomP3({ saturation: [-0.1, 0.5] }), RangeError)
+      assert.throws(() => randomP3({ lightness: [0.2, 1.1] }), RangeError)
+      assert.throws(() => randomP3({ alpha: [-0.1, 1] }), RangeError)
+    })
+
+    it('rejects inverted non-wrapping ranges', () => {
+      assert.throws(() => randomP3({ saturation: [1, 0] }), RangeError)
+      assert.throws(() => randomP3({ lightness: [0.7, 0.3] }), RangeError)
+      assert.throws(() => randomP3({ alpha: [1, 0] }), RangeError)
+    })
+
+    it('rejects unknown output formats', () => {
+      assert.throws(() => randomP3({ format: 'hex' }), TypeError)
+    })
+  })
+
   describe('format: object', () => {
     it('returns object with required keys', () => {
       const obj = randomP3({ format: 'object' })
