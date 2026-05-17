@@ -12,6 +12,16 @@ const HUE_RANGES = {
 }
 
 const HUE_NAMES = Object.keys(HUE_RANGES)
+const HUE_OPTIONS = Object.fromEntries(
+  Object.entries(HUE_RANGES).map(([name, ranges]) => [
+    name,
+    {
+      ranges,
+      arcs: ranges.map(([min, max]) => max - min),
+      totalArc: ranges.reduce((sum, [min, max]) => sum + max - min, 0),
+    },
+  ])
+)
 
 function hslToRgb(h, s, l) {
   h = h / 360
@@ -59,18 +69,16 @@ function randomHue(hueOption) {
     return v >= 360 ? v - 360 : v
   }
 
-  const ranges = HUE_RANGES[hueOption]
-  if (!ranges) throw new Error(`Unknown hue name: "${hueOption}". Valid names: ${HUE_NAMES.join(', ')}`)
+  const hue = HUE_OPTIONS[hueOption]
+  if (!hue) throw new Error(`Unknown hue name: "${hueOption}". Valid names: ${HUE_NAMES.join(', ')}`)
 
   // Pick a random sub-range weighted by arc length
-  const arcs = ranges.map(([a, b]) => b - a)
-  const totalArc = arcs.reduce((sum, a) => sum + a, 0)
-  let pick = Math.random() * totalArc
-  for (let i = 0; i < ranges.length; i++) {
-    pick -= arcs[i]
-    if (pick <= 0) return randomInRange(ranges[i][0], ranges[i][1])
+  let pick = Math.random() * hue.totalArc
+  for (let i = 0; i < hue.ranges.length; i++) {
+    pick -= hue.arcs[i]
+    if (pick <= 0) return randomInRange(hue.ranges[i][0], hue.ranges[i][1])
   }
-  return randomInRange(ranges[0][0], ranges[0][1])
+  return randomInRange(hue.ranges[0][0], hue.ranges[0][1])
 }
 
 function round(v, d = 4) {
