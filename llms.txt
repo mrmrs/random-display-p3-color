@@ -39,13 +39,15 @@ Returns a CSS string by default: `"color(display-p3 0.93 0.18 0.45)"`
 
 #### Options (all optional)
 
-- `hue`: Named string or [min, max] degree range (0-360)
+- `hue`: Named string or finite [min, max] degree range (0-360)
   - Named: 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple', 'pink', 'warm', 'cool'
   - Range: [200, 260] for custom degree ranges
-- `saturation`: [min, max] where 0=gray, 1=full saturation. Default [0, 1]
-- `lightness`: [min, max] where 0=black, 1=white. Default [0, 1]
-- `alpha`: [min, max] where 0=transparent, 1=opaque. Default [1, 1]. Only included in output when < 1
+- `saturation`: finite ordered [min, max] where 0=gray, 1=full saturation. Default [0, 1]
+- `lightness`: finite ordered [min, max] where 0=black, 1=white. Default [0, 1]
+- `alpha`: finite ordered [min, max] where 0=transparent, 1=opaque. Default [1, 1]. Only included in output when < 1
 - `format`: 'css' (default) returns string, 'object' returns { r, g, b, alpha, css, h?, s?, l? }
+
+Invalid range shapes throw TypeError. Non-finite values, out-of-domain values, and inverted non-hue ranges throw RangeError. Hue ranges can wrap around zero, e.g. [350, 10].
 
 #### Named Hue Ranges (HSL degrees)
 
@@ -71,6 +73,9 @@ randomP3({ hue: 'blue' })
 
 // Degree range
 randomP3({ hue: [200, 260] })
+
+// Wrapping hue range
+randomP3({ hue: [350, 10] })
 
 // Pastel warm tones
 randomP3({ hue: 'warm', lightness: [0.7, 0.9], saturation: [0.3, 0.6] })

@@ -14,7 +14,10 @@ export type HueName =
   | 'cool';
 
 /**
- * A [min, max] numeric range.
+ * A finite [min, max] numeric range.
+ *
+ * For saturation, lightness, and alpha, values must be ordered and within 0-1.
+ * For hue, values must be within 0-360 and may wrap around zero, e.g. [350, 10].
  */
 export type Range = [min: number, max: number];
 
@@ -23,8 +26,9 @@ export type Range = [min: number, max: number];
  */
 export interface RandomP3Options {
   /**
-   * Constrain the hue. Pass a named color family or a [min, max]
-   * range in HSL degrees (0-360).
+   * Constrain the hue. Pass a named color family or a finite [min, max]
+   * range in HSL degrees (0-360). Hue ranges may wrap around zero,
+   * e.g. [350, 10].
    *
    * Named hues: 'red', 'orange', 'yellow', 'green', 'cyan',
    * 'blue', 'purple', 'pink', 'warm', 'cool'
@@ -98,6 +102,8 @@ export interface ColorObject {
  *
  * @param options - Optional constraints for hue, saturation, lightness, alpha, and format
  * @returns A CSS color string or ColorObject depending on format option
+ * @throws TypeError for invalid range shapes or unknown formats
+ * @throws RangeError for non-finite or out-of-domain range values
  *
  * @example
  * // Fully random P3 color
