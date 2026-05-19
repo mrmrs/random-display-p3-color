@@ -18,13 +18,16 @@ export type HueName =
  *
  * For saturation, lightness, and alpha, values must be ordered and within 0-1.
  * For hue, values must be within 0-360 and may wrap around zero, e.g. [350, 10].
+ * Single-value ranges return that exact value. Sampled non-fixed ranges use
+ * Math.random(), so the generated value is greater than or equal to min and
+ * less than max.
  */
 export type Range = [min: number, max: number];
 
 /**
- * Options for generating a random Display-P3 color.
+ * Shared options for generating a random Display-P3 color.
  */
-export interface RandomP3Options {
+export interface RandomP3BaseOptions {
   /**
    * Constrain the hue. Pass a named color family or a finite [min, max]
    * range in HSL degrees (0-360). Hue ranges may wrap around zero,
@@ -62,22 +65,52 @@ export interface RandomP3Options {
    */
   alpha?: Range;
 
+}
+
+/**
+ * CSS string output options.
+ */
+export interface RandomP3CssOptions extends RandomP3BaseOptions {
   /**
    * Output format.
-   * - 'css': CSS color string `color(display-p3 r g b)` (default)
-   * - 'object': Object with r, g, b, alpha, css, and HSL values if applicable
-   * `output` is an alias for `format`.
    * @default 'css'
    */
-  format?: 'css' | 'object';
+  format?: 'css';
 
   /**
    * Output format alias. Kept separate so code can use the same option name as
    * random-colorjs-color.
    * @default 'css'
    */
-  output?: 'css' | 'object';
+  output?: 'css';
 }
+
+/**
+ * Object output selected via `format`.
+ */
+export interface RandomP3FormatObjectOptions extends RandomP3BaseOptions {
+  format: 'object';
+  output?: 'object';
+}
+
+/**
+ * Object output selected via `output`.
+ */
+export interface RandomP3OutputObjectOptions extends RandomP3BaseOptions {
+  output: 'object';
+  format?: 'object';
+}
+
+/**
+ * Object output options. If both `format` and `output` are supplied, they must
+ * match.
+ */
+export type RandomP3ObjectOptions = RandomP3FormatObjectOptions | RandomP3OutputObjectOptions;
+
+/**
+ * Options for generating a random Display-P3 color.
+ */
+export type RandomP3Options = RandomP3CssOptions | RandomP3ObjectOptions;
 
 /**
  * Color object returned when format is 'object'.
@@ -133,7 +166,6 @@ export interface ColorObject {
  * randomP3({ hue: 'green', format: 'object' })
  * // => { r: 0.2, g: 0.8, b: 0.3, alpha: 1, h: 130, s: 0.7, l: 0.5, css: "color(display-p3 ...)" }
  */
-export default function randomP3(options: RandomP3Options & { format: 'object' }): ColorObject;
-export default function randomP3(options: RandomP3Options & { output: 'object' }): ColorObject;
-export default function randomP3(options?: RandomP3Options & { format?: 'css'; output?: 'css' }): string;
+export default function randomP3(options: RandomP3ObjectOptions): ColorObject;
+export default function randomP3(options?: RandomP3CssOptions): string;
 export default function randomP3(options?: RandomP3Options): string | ColorObject;

@@ -45,7 +45,7 @@ Without options, generates three independent random floats in [0, 1] covering th
 | `format` | `'css' \| 'object'` | `'css'` | Output format |
 | `output` | `'css' \| 'object'` | `'css'` | Alias for `format` |
 
-Ranges are inclusive at both ends. `saturation`, `lightness`, and `alpha` ranges must be ordered as `[min, max]`. Hue ranges may wrap around zero, so `[350, 10]` means red hues from 350-360 and 0-10 degrees. Invalid ranges throw `TypeError` or `RangeError` before a color is generated.
+Single-value ranges such as `[0.5, 0.5]` return that exact value. Non-fixed ranges are sampled with `Math.random()`, so generated values are greater than or equal to the minimum and less than the maximum. `saturation`, `lightness`, and `alpha` ranges must be ordered as `[min, max]`. Hue ranges may wrap around zero, so `[350, 10]` means red hues from 350-360 and 0-10 degrees. Invalid ranges throw `TypeError` or `RangeError` before a color is generated.
 
 #### Named Hues
 
