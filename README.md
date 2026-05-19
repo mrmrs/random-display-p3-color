@@ -43,6 +43,7 @@ Without options, generates three independent random floats in [0, 1] covering th
 | `lightness` | `[min, max]` | `[0, 1]` | Finite HSL lightness range in 0-1 |
 | `alpha` | `[min, max]` | `[1, 1]` | Finite opacity range in 0-1. Included in output only when < 1 |
 | `format` | `'css' \| 'object'` | `'css'` | Output format |
+| `output` | `'css' \| 'object'` | `'css'` | Alias for `format` |
 
 Ranges are inclusive at both ends. `saturation`, `lightness`, and `alpha` ranges must be ordered as `[min, max]`. Hue ranges may wrap around zero, so `[350, 10]` means red hues from 350-360 and 0-10 degrees. Invalid ranges throw `TypeError` or `RangeError` before a color is generated.
 
@@ -114,6 +115,8 @@ randomP3({ hue: 'green', format: 'object' })
 //   css: "color(display-p3 0.2134 0.8012 0.3891)"
 // }
 ```
+
+`output: 'object'` is also accepted for consistency with `random-colorjs-color`.
 
 ### Canvas / p5.js
 

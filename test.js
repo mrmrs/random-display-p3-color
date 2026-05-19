@@ -183,6 +183,8 @@ describe('randomP3()', () => {
 
     it('rejects unknown output formats', () => {
       assert.throws(() => randomP3({ format: 'hex' }), TypeError)
+      assert.throws(() => randomP3({ output: 'hex' }), TypeError)
+      assert.throws(() => randomP3({ format: 'css', output: 'object' }), TypeError)
     })
   })
 
@@ -193,6 +195,14 @@ describe('randomP3()', () => {
       assert.ok('g' in obj)
       assert.ok('b' in obj)
       assert.ok('alpha' in obj)
+      assert.ok('css' in obj)
+    })
+
+    it('supports output: object as an alias for format: object', () => {
+      const obj = randomP3({ output: 'object' })
+      assert.ok('r' in obj)
+      assert.ok('g' in obj)
+      assert.ok('b' in obj)
       assert.ok('css' in obj)
     })
 

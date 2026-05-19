@@ -66,9 +66,17 @@ export interface RandomP3Options {
    * Output format.
    * - 'css': CSS color string `color(display-p3 r g b)` (default)
    * - 'object': Object with r, g, b, alpha, css, and HSL values if applicable
+   * `output` is an alias for `format`.
    * @default 'css'
    */
   format?: 'css' | 'object';
+
+  /**
+   * Output format alias. Kept separate so code can use the same option name as
+   * random-colorjs-color.
+   * @default 'css'
+   */
+  output?: 'css' | 'object';
 }
 
 /**
@@ -125,6 +133,7 @@ export interface ColorObject {
  * randomP3({ hue: 'green', format: 'object' })
  * // => { r: 0.2, g: 0.8, b: 0.3, alpha: 1, h: 130, s: 0.7, l: 0.5, css: "color(display-p3 ...)" }
  */
-export default function randomP3(options?: RandomP3Options & { format?: 'css' }): string;
 export default function randomP3(options: RandomP3Options & { format: 'object' }): ColorObject;
+export default function randomP3(options: RandomP3Options & { output: 'object' }): ColorObject;
+export default function randomP3(options?: RandomP3Options & { format?: 'css'; output?: 'css' }): string;
 export default function randomP3(options?: RandomP3Options): string | ColorObject;

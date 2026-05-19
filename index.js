@@ -81,22 +81,26 @@ function randomHue(hueOption) {
   return randomInRange(hue.ranges[0][0], hue.ranges[0][1])
 }
 
-function round(v, d = 4) {
-  const f = Math.pow(10, d)
-  return Math.round(v * f) / f
+function round(v, factor = 10000) {
+  return Math.round(v * factor) / factor
 }
 
 function formatP3(r, g, b, a) {
-  const alpha = a < 1 ? ` / ${round(a, 3)}` : ''
+  const alpha = a < 1 ? ` / ${round(a, 1000)}` : ''
   return `color(display-p3 ${round(r)} ${round(g)} ${round(b)}${alpha})`
 }
 
 export default function randomP3(options = {}) {
-  const { hue, saturation, lightness, alpha: alphaOpt, format } = options
+  const { hue, saturation, lightness, alpha: alphaOpt, format, output } = options
+  const outputFormat = output ?? format
   const useHsl = hue != null || saturation != null || lightness != null
 
-  if (format != null && format !== 'css' && format !== 'object') {
-    throw new TypeError('format must be "css" or "object"')
+  if (format != null && output != null && format !== output) {
+    throw new TypeError('format and output must match when both are supplied')
+  }
+
+  if (outputFormat != null && outputFormat !== 'css' && outputFormat !== 'object') {
+    throw new TypeError('output must be "css" or "object"')
   }
 
   if (saturation != null) validateRange('saturation', saturation, 0, 1)
@@ -123,12 +127,12 @@ export default function randomP3(options = {}) {
 
   const css = formatP3(r, g, b, a)
 
-  if (format === 'object') {
-    const result = { r: round(r), g: round(g), b: round(b), alpha: round(a, 3), css }
+  if (outputFormat === 'object') {
+    const result = { r: round(r), g: round(g), b: round(b), alpha: round(a, 1000), css }
     if (useHsl) {
-      result.h = round(h, 1)
-      result.s = round(s, 3)
-      result.l = round(l, 3)
+      result.h = round(h, 10)
+      result.s = round(s, 1000)
+      result.l = round(l, 1000)
     }
     return result
   }
